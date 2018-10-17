@@ -16,6 +16,20 @@ class cliente(object):
             mensaje = input(url + ">")
             mensaje_b = bytes(mensaje,encoding= "utf-8")
             self.so.send(mensaje_b)
+            if mensaje == "local all":
+                izen_a = []
+                fitxa_a = []
+                while True:
+                    luz_rev = self.so.recv(1024)
+                    print(luz_rev)
+                    if int(luz_rev) == 0 :
+                        break
+                    self.so.send(bytes("ok",encoding = 'utf-8')) 
+                    fitxategia = self.so.recv(int(luz_rev))
+                    print(fitxategia)
+                    self.so.send(bytes("ok",encoding = 'utf-8')) 
+                    izena = self.so.recv(4095)
+                    print(izena)
             #luzehera
             lu = self.so.recv(4096)
             #itxi

