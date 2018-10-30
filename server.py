@@ -92,7 +92,6 @@ class server(object):
                 di = os.listdir(url)
                 for x in di:
                       if os.path.isdir(url + "\\" + x) != True:
-                          try:
                            fichategia = open(x,'rb').read()
                            luz = str(sys.getsizeof(fichategia))
                            luz_send = self.soc.send(bytes(luz,encoding = 'utf-8')) 
