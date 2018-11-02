@@ -3,7 +3,7 @@ import socket
 import time
 import win32api
 import sys
-
+import threading
 
 
 
@@ -64,17 +64,13 @@ class server(object):
                     except IOError as e: # ruta gaizki baldinbadago errore bat bidaliko dizu 
                          erantzuna = "comandoa gaizki dago"
               self.soc.send(bytes(erantzuna,encoding = 'utf-8')) # erantzuna bidaliko du 
-          #if comand[0].lower() == "local" and len(comand) > 1:
-             #erantzuna = "datuak OK"
-             #self.soc.send(bytes(erantzuna,encoding = 'utf-8'))  # erantzuna bidaliko du 
-          #   print("local")
-          else:
+          elif comand[0] != "local":
             erantzuna = " " #erantzuna utza izango da
             balioa = os.popen(stri,'r',1).close()# guk idatzitako komandoa exekutatuko du errorearen mezua bidaliz
             erantzuna = os.popen(stri,'r',1).read()#komandoaren errorea  
             print(erantzuna)
             print(balioa)   
-            if balioa == 1:# errorearen balioa 1 baldinbada 
+            if balioa == 1  :# errorearen balioa 1 baldinbada 
                 erantzuna = "errorea"
             if balioa == 2:# errorearen balioa 2 baldinbada 
                 erantzuna = "ez dazkazu baimenik"
@@ -82,7 +78,6 @@ class server(object):
                erantzuna = "informazio ezezaguna" 
             erantzuna_byt = bytes(erantzuna,encoding = 'utf-8')
             luz = str(sys.getsizeof(erantzuna_byt))
-            print(luz)
             self.soc.send(bytes(luz,encoding = 'utf-8'))#batuaren luzehera bidaltzen diogu
             self.soc.recv(1024)#luzehera ongi iritsi dela adierazten diogu
             self.soc.send(bytes(erantzuna,encoding = 'utf-8'))#erantzuna bidaltzeko 
@@ -90,21 +85,31 @@ class server(object):
              erantzuna = "datuak OK"
              if comand[1].lower() == "all":
                 di = os.listdir(url)
+                fit_ca = 0
                 for x in di:
-                      if os.path.isdir(url + "\\" + x) != True:
-                           fichategia = open(x,'rb').read()
-                           luz = str(sys.getsizeof(fichategia))
-                           luz_send = self.soc.send(bytes(luz,encoding = 'utf-8')) 
-                           self.soc.recv(1024)
-                           fich_send = self.soc.sendall(fichategia)
-                           self.soc.recv(1024)
-                           izena_send = self.soc.send(bytes(x,encoding = 'utf-8'))
-                  self.soc.send(bytes("0",encoding = 'utf-8'))
-                  self.soc.recv(1024)
-              else:
-                erantzuna = "comandoa gaizki dago"
+                    if os.path.isdir(url + "\\" + x) != True:
+                        print(fit_ca)
+                        fit_ca += 1
+                self.soc.send(bytes(str(fit_ca),encoding = 'utf-8'))
+                for x in di:
+                    if os.path.isdir(url + "\\" + x) != True:
+                        fichategia = open(x,'rb').read()
+                        luz = str(sys.getsizeof(fichategia))
+                        print(x)    
+                #for x in di:
+                #    if os.path.isdir(url + "\\" + x) != True:
+                #           fichategia = open(x,'rb').read()
+                #           luz = str(sys.getsizeof(fichategia))
+                #           luz_send = self.soc.send(bytes(luz,encoding = 'utf-8')) 
+                #           self.soc.recv(1024)
+                #           fich_send = self.soc.sendall(fichategia)
+                #           self.soc.recv(1024)
+                #           izena_send = self.soc.send(bytes(x,encoding = 'utf-8'))
+                #self.soc.send(bytes("itxi",encoding = 'utf-8'))
+                self.soc.recv(1024)
+             else:
+               erantzuna = "comandoa gaizki dago"
              self.soc.send(bytes(erantzuna,encoding = 'utf-8'))  # erantzuna bidaliko du 
-             print("local") 
           #funtzioak
           print(self.soc.recv(1024))#mezua ongi iritzi dela adirezten du
       self.so.close()#tcp koneksioa amaitu
