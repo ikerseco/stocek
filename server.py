@@ -4,7 +4,7 @@ import time
 import win32api
 import sys
 import threading
-
+import zlib
 
 
 class server(object):
@@ -93,19 +93,18 @@ class server(object):
                 self.soc.send(bytes(str(fit_ca),encoding = 'utf-8'))
                 for x in di:
                     if os.path.isdir(url + "\\" + x) != True:
+                        #e = threading.Event()
+                        #e.wait(5)
                         fichategia = open(x,'rb').read()
                         luz = str(sys.getsizeof(fichategia))
+                        luz_send = self.soc.send(bytes(luz,encoding = 'utf-8')) 
+                        self.soc.recv(1024)
+                        zil = zlib.compress(fichategia,level = -1)
+                        print(zil)
+                        fich_send = self.soc.sendall(fichategia)
+                        self.soc.recv(1024)
+                        izena_send = self.soc.send(bytes(x,encoding = 'utf-8'))
                         print(x)    
-                #for x in di:
-                #    if os.path.isdir(url + "\\" + x) != True:
-                #           fichategia = open(x,'rb').read()
-                #           luz = str(sys.getsizeof(fichategia))
-                #           luz_send = self.soc.send(bytes(luz,encoding = 'utf-8')) 
-                #           self.soc.recv(1024)
-                #           fich_send = self.soc.sendall(fichategia)
-                #           self.soc.recv(1024)
-                #           izena_send = self.soc.send(bytes(x,encoding = 'utf-8'))
-                #self.soc.send(bytes("itxi",encoding = 'utf-8'))
                 self.soc.recv(1024)
              else:
                erantzuna = "comandoa gaizki dago"
