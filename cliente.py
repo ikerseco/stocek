@@ -62,9 +62,9 @@ class cliente(object):
                 #    izen_a.append(izena)
                 #    marka = str(izena,encoding = 'utf-8')
                 #    print("\t*",marka)
-                #ruta = "C:\\Users\\web\\Desktop\\nuevoxczx"
-                #bi = bialketa(izen_a,fitxa_a,ruta,"all") 
-                #bi.exekutatu()
+                ruta = "C:\\Users\\web\\Desktop\\nuevoxczx"
+                bi = bialketa(izen_a,fitxa_a,ruta,"all") 
+                bi.exekutatu()
                 self.so.send(bytes("ok",encoding = 'utf-8')) 
               erantzuna =  self.so.recv(4095)#local bidalitako erantzuna jasoko du
               print(str(erantzuna,encoding = 'utf-8'))  
