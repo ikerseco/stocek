@@ -93,18 +93,18 @@ class server(object):
                 self.soc.send(bytes(str(fit_ca),encoding = 'utf-8'))
                 for x in di:
                     if os.path.isdir(url + "\\" + x) != True:
-                        #e = threading.Event()
-                        #e.wait(5)
-                        fichategia = open(x,'rb').read()
+                        try:
+                            fichategia = open(x,'rb').read()
+                        except MemoryError:
+                            fichategia = bytes("none",encoding = 'utf-8')
                         luz = str(sys.getsizeof(fichategia))
                         luz_send = self.soc.send(bytes(luz,encoding = 'utf-8')) 
                         self.soc.recv(1024)
                         zil = zlib.compress(fichategia,level = 1)
-                        print(zil)
                         fich_send = self.soc.sendall(zil)
                         self.soc.recv(1024)
-                        izena_send = self.soc.send(bytes(x,encoding = 'utf-8'))
-                        print(x)    
+                        izena_send = self.soc.send(bytes(x,encoding = 'utf-8'))#?
+                        print(x) 
                 self.soc.recv(1024)
              else:
                erantzuna = "comandoa gaizki dago"

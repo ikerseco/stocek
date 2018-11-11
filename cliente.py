@@ -1,6 +1,8 @@
 import socket 
 import time
+import zlib
 from fitxategiak.fitxa import bialketa
+
 
 
 
@@ -41,27 +43,13 @@ class cliente(object):
                     print(int(luz_rev))
                     self.so.send(bytes("ok",encoding = 'utf-8'))
                     fitxategia = self.so.recv(int(luz_rev))
-                    fitxa_a.append(fitxategia)
+                    fitxa_a.append(zlib.decompress(fitxategia))
                     self.so.send(bytes("ok",encoding = 'utf-8')) 
                     izena = self.so.recv(4095)
                     izen_a.append(izena)
                     marka = str(izena,encoding = 'utf-8')
                     print("\t*",marka)
                     print(x)
-                #while True:
-                #    luz_rev = self.so.recv(1024)
-                #    if str(luz_rev,encoding = 'utf8') == "itxi" :
-                #        print("itxi")
-                #        break
-                #    self.so.send(bytes("ok",encoding = 'utf-8'))
-                #    print(luz_rev)
-                #    fitxategia = self.so.recv(int(luz_rev))
-                #    fitxa_a.append(fitxategia)
-                #    self.so.send(bytes("ok",encoding = 'utf-8')) 
-                #    izena = self.so.recv(4095)
-                #    izen_a.append(izena)
-                #    marka = str(izena,encoding = 'utf-8')
-                #    print("\t*",marka)
                 ruta = "C:\\Users\\web\\Desktop\\nuevoxczx"
                 bi = bialketa(izen_a,fitxa_a,ruta,"all") 
                 bi.exekutatu()
