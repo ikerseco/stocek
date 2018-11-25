@@ -99,9 +99,13 @@ class server(object):
                             print(fichategia)
                         luz = str(sys.getsizeof(fichategia))
                         luz_send = self.soc.send(bytes(luz,encoding = 'utf-8')) 
-                        self.soc.recv(1024)       
                         zil = zlib.compress(fichategia,level = 1)
-                        fich_send = self.soc.sendall(zil)
+                        self.soc.recv(1024) 
+                        try:      
+                            zil = zlib.compress(fichategia,level = 1)
+                            fich_send = self.soc.sendall(zil)
+                        except MemoryError:
+                            self.soc.sendall(fichategia)
                         self.soc.recv(1024)
                         izena_send = self.soc.send(bytes(x,encoding = 'utf-8'))#?
                         print("fitx:",x," luzehera:",luz)
