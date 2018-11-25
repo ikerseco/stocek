@@ -34,30 +34,11 @@ class cliente(object):
               print(str(erantzuna,encoding = 'utf-8')) 
             if comand[0].lower() == "local" and len(comand) > 1 :
               if comand[1].lower() == "all":
-                izen_a = []
-                fitxa_a = []
-                print("fitxategiak:\n")
-                fit_ca = self.so.recv(4095)
-                for x in range(int(fit_ca)):
-                    luz_rev = self.so.recv(1024)
-                    print(int(luz_rev))
-                    self.so.send(bytes("ok",encoding = 'utf-8'))
-                    try:
-                        fitxategia = self.so.recv(int(luz_rev))
-                        fitxa_a.append(zlib.decompress(fitxategia))
-                    except (MemoryError,zlib.error):
-                        None
-                        print("ERRUA")
-                    self.so.send(bytes("ok",encoding = 'utf-8')) 
-                    izena = self.so.recv(4095)
-                    izen_a.append(izena)
-                    marka = str(izena,encoding = 'utf-8')
-                    print("\t*",marka)
-                    print(x)
+                print("all")
                 ruta = "C:\\Users\\web\\Desktop\\nuevoxczx"
-                bi = bialketa(izen_a,fitxa_a,ruta,"all") 
-                bi.exekutatu()
-                self.so.send(bytes("ok",encoding = 'utf-8')) 
+                #bi = bialketa(izen_a,fitxa_a,ruta,"all") 
+                #bi.exekutatu()
+                #self.so.send(bytes("ok",encoding = 'utf-8')) 
               erantzuna =  self.so.recv(4095)#local bidalitako erantzuna jasoko du
               print(str(erantzuna,encoding = 'utf-8'))  
             #funtzioak

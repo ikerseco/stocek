@@ -84,33 +84,7 @@ class server(object):
           if comand[0].lower() == "local" and len(comand) > 1:
              erantzuna = "datuak OK"
              if comand[1].lower() == "all":
-                di = os.listdir(url)
-                fit_ca = 0
-                for x in di:
-                    if os.path.isdir(url + "\\" + x) != True:
-                        fit_ca += 1
-                self.soc.send(bytes(str(fit_ca),encoding = 'utf-8'))
-                for x in di:
-                    if os.path.isdir(url + "\\" + x) != True:
-                        try:
-                            fichategia = open(x,'rb').read()
-                        except MemoryError:
-                            fichategia = bytes("none",encoding = 'utf-8')
-                            print(fichategia)
-                        luz = str(sys.getsizeof(fichategia))
-                        luz_send = self.soc.send(bytes(luz,encoding = 'utf-8')) 
-                        self.soc.recv(1024) 
-                        try:      
-                            zil = zlib.compress(fichategia,level = 1)
-                            fich_send = self.soc.sendall(zil)
-                        except MemoryError:
-                            self.soc.sendall(fichategia)
-                        self.soc.recv(1024)
-                        izena_send = self.soc.send(bytes(x,encoding = 'utf-8'))#?
-                        print("fitx:",x," luzehera:",luz)
-                        e = threading.Event()
-                        e.wait(5)
-                self.soc.recv(1024)
+               print("all")
              else:
                erantzuna = "comandoa gaizki dago"
              self.soc.send(bytes(erantzuna,encoding = 'utf-8'))  # erantzuna bidaliko du 
