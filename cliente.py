@@ -47,6 +47,7 @@ class cliente(object):
                         fitxa_a.append(zlib.decompress(fitxategia))
                     except (MemoryError,zlib.error):
                         None
+                        print("ERRUA")
                     self.so.send(bytes("ok",encoding = 'utf-8')) 
                     izena = self.so.recv(4095)
                     izen_a.append(izena)
