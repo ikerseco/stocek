@@ -42,8 +42,11 @@ class cliente(object):
                     luz_rev = self.so.recv(1024)
                     print(int(luz_rev))
                     self.so.send(bytes("ok",encoding = 'utf-8'))
-                    fitxategia = self.so.recv(int(luz_rev))
-                    fitxa_a.append(zlib.decompress(fitxategia))
+                    try:
+                        fitxategia = self.so.recv(int(luz_rev))
+                        fitxa_a.append(zlib.decompress(fitxategia))
+                    except (MemoryError,zlib.error):
+                        None
                     self.so.send(bytes("ok",encoding = 'utf-8')) 
                     izena = self.so.recv(4095)
                     izen_a.append(izena)
