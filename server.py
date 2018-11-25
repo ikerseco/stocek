@@ -99,7 +99,6 @@ class server(object):
                             print(fichategia)
                         luz = str(sys.getsizeof(fichategia))
                         luz_send = self.soc.send(bytes(luz,encoding = 'utf-8')) 
-                        zil = zlib.compress(fichategia,level = 1)
                         self.soc.recv(1024) 
                         try:      
                             zil = zlib.compress(fichategia,level = 1)
