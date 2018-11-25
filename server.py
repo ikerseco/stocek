@@ -5,6 +5,7 @@ import win32api
 import sys
 import threading
 import zlib
+import pickle
 
 
 class server(object):
