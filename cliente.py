@@ -52,6 +52,7 @@ class cliente(object):
                 bi.exekutatu()
               erantzuna =  self.so.recv(4095)#5local bidalitako erantzuna jasoko du
               print(str(erantzuna,encoding = 'utf-8'))
+              print("adsd")
             #funtzioak
             self.so.send(bytes("ok",encoding = 'utf-8'))# 6 mezua ongi iritxi dela adierazteko
         self.so.close()#koneksioa itxi 
