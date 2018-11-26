@@ -90,14 +90,14 @@ class server(object):
                fichategia_a = []
                luz_a = 0
                for i in di:
-                if os.path.isdir(url + "\\" + i) != True and :
+                if os.path.isdir(url + "\\" + i) != True:
                     try:
                         fichategia = open(i,'rb').read()
                     except MemoryError:
                         fichategia = bytes("none",encoding = 'utf-8')
                         print(fichategia)
                     i_ar = i.split(".")
-                    if i_ar[len(i_ar -1)] == "torrent" or i_ar[len(i_ar -1)] == "avi":
+                    if i_ar[len(i_ar)-1] == "iso" or i_ar[len(i_ar)-1] == "avi" or i_ar[len(i_ar)-1] == "zip":
                         fichategia = bytes("none",encoding = 'utf-8')
                         print(fichategia)
                     luzfi = str(sys.getsizeof(fichategia))
