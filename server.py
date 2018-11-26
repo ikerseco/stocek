@@ -5,6 +5,7 @@ import win32api
 import sys
 import threading
 import zlib
+import pickle
 
 
 class server(object):
@@ -84,38 +85,47 @@ class server(object):
           if comand[0].lower() == "local" and len(comand) > 1:
              erantzuna = "datuak OK"
              if comand[1].lower() == "all":
-                di = os.listdir(url)
-                fit_ca = 0
-                for x in di:
-                    if os.path.isdir(url + "\\" + x) != True:
-                        fit_ca += 1
-                self.soc.send(bytes(str(fit_ca),encoding = 'utf-8'))
-                for x in di:
-                    if os.path.isdir(url + "\\" + x) != True:
-                        try:
-                            fichategia = open(x,'rb').read()
-                        except MemoryError:
-                            fichategia = bytes("none",encoding = 'utf-8')
-                            print(fichategia)
-                        luz = str(sys.getsizeof(fichategia))
-                        luz_send = self.soc.send(bytes(luz,encoding = 'utf-8')) 
-                        self.soc.recv(1024) 
-                        try:      
-                            zil = zlib.compress(fichategia,level = 1)
-                            fich_send = self.soc.sendall(zil)
-                        except MemoryError:
-                            self.soc.sendall(fichategia)
-                        self.soc.recv(1024)
-                        izena_send = self.soc.send(bytes(x,encoding = 'utf-8'))#?
-                        print("fitx:",x," luzehera:",luz)
-                        e = threading.Event()
-                        e.wait(5)
-                self.soc.recv(1024)
+               di = os.listdir()
+               izena_a = []
+               fichategia_a = []
+               luz_a = 0
+               for i in di:
+                if os.path.isdir(url + "\\" + i) != True:
+                    try:
+                        fichategia = open(i,'rb').read()
+                    except MemoryError:
+                        fichategia = bytes("none",encoding = 'utf-8')
+                        print(fichategia)
+                    i_ar = i.split(".")
+                    if i_ar[len(i_ar)-1] == "iso" or i_ar[len(i_ar)-1] == "avi" or i_ar[len(i_ar)-1] == "zip":
+                        fichategia = bytes("none",encoding = 'utf-8')
+                        print(fichategia)
+                    luzfi = str(sys.getsizeof(fichategia))
+                    izena = bytes(i,encoding = 'utf-8')
+                    luziz = str(sys.getsizeof(izena))
+                    print("ongi: ",izena," lusehera: ",luzfi)
+                    luz_a += int(luzfi) + int(luziz)
+                    izena_a.append(izena)
+                    fichategia_a.append(fichategia)
+                    e = threading.Event()
+                    e.wait(5)
+               arr_obj = (izena_a,fichategia_a)
+               data_string = pickle.dumps(arr_obj)
+               data_arr = pickle.loads(data_string)
+               print(data_arr[0])
+               self.soc.send(bytes(str(luz_a),encoding = 'utf-8'))
+               #1
+               self.soc.recv(1024)
+               #2
+               self.soc.sendall(data_string)
+               #3
+               self.soc.recv(1024)
+               #4
              else:
                erantzuna = "comandoa gaizki dago"
-             self.soc.send(bytes(erantzuna,encoding = 'utf-8'))  # erantzuna bidaliko du 
+             self.soc.send(bytes(erantzuna,encoding = 'utf-8'))  # 5 erantzuna bidaliko du 
           #funtzioak
-          print(self.soc.recv(1024))#mezua ongi iritzi dela adirezten du
+          print(self.soc.recv(1024))# 6 mezua ongi iritzi dela adirezten du
       self.so.close()#tcp koneksioa amaitu
       self.soc.close()#tcp koneksioa amaitu
 
