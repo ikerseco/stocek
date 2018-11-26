@@ -36,19 +36,24 @@ class cliente(object):
             if comand[0].lower() == "local" and len(comand) > 1 :
               if comand[1].lower() == "all":
                 luz_a =  self.so.recv(14095)
-                self.so.send(bytes("ok",encoding = 'utf-8'))#
+                #1
+                self.so.send(bytes("ok",encoding = 'utf-8'))
+                #2
                 fitxategiak_a =  self.so.recv(int(luz_a))
-                self.so.send(bytes("ok",encoding = 'utf-8'))#
+                #3
+                self.so.send(bytes("ok",encoding = 'utf-8'))
+                #4
                 data_arr = pickle.loads(fitxategiak_a)
                 print(data_arr[0])
                 ruta = "C:\\Users\\web\\Desktop\\nuevoxczx"
-                #bi = bialketa(izen_a,fitxa_a,ruta,"all") 
-                #bi.exekutatu()
-                #self.so.send(bytes("ok",encoding = 'utf-8')) 
-              erantzuna =  self.so.recv(4095)#local bidalitako erantzuna jasoko du
-              print(str(erantzuna,encoding = 'utf-8'))  
+                izen_a = data_arr[0]
+                fitxa_a = data_arr[1]
+                bi = bialketa(izen_a,fitxa_a,ruta,"all") 
+                bi.exekutatu()
+              erantzuna =  self.so.recv(4095)#5local bidalitako erantzuna jasoko du
+              print(str(erantzuna,encoding = 'utf-8'))
             #funtzioak
-            self.so.send(bytes("ok",encoding = 'utf-8'))# mezua ongi iritxi dela adierazteko
+            self.so.send(bytes("ok",encoding = 'utf-8'))# 6 mezua ongi iritxi dela adierazteko
         self.so.close()#koneksioa itxi 
 
 cliente = cliente("192.168.0.10",9999)

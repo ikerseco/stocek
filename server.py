@@ -114,14 +114,18 @@ class server(object):
                data_arr = pickle.loads(data_string)
                print(data_arr[0])
                self.soc.send(bytes(str(luz_a),encoding = 'utf-8'))
+               #1
                self.soc.recv(1024)
+               #2
                self.soc.sendall(data_string)
+               #3
                self.soc.recv(1024)
+               #4
              else:
                erantzuna = "comandoa gaizki dago"
-             self.soc.send(bytes(erantzuna,encoding = 'utf-8'))  # erantzuna bidaliko du 
+             self.soc.send(bytes(erantzuna,encoding = 'utf-8'))  # 5 erantzuna bidaliko du 
           #funtzioak
-          print(self.soc.recv(1024))#mezua ongi iritzi dela adirezten du
+          print(self.soc.recv(1024))# 6 mezua ongi iritzi dela adirezten du
       self.so.close()#tcp koneksioa amaitu
       self.soc.close()#tcp koneksioa amaitu
 
