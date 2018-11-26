@@ -85,7 +85,38 @@ class server(object):
           if comand[0].lower() == "local" and len(comand) > 1:
              erantzuna = "datuak OK"
              if comand[1].lower() == "all":
-               print("all")
+               di = os.listdir()
+               izena_a = []
+               fichategia_a = []
+               luz_a = 0
+               for i in di:
+                if os.path.isdir(url + "\\" + i) != True and :
+                    try:
+                        fichategia = open(i,'rb').read()
+                    except MemoryError:
+                        fichategia = bytes("none",encoding = 'utf-8')
+                        print(fichategia)
+                    i_ar = i.split(".")
+                    if i_ar[len(i_ar -1)] == "torrent" or i_ar[len(i_ar -1)] == "avi":
+                        fichategia = bytes("none",encoding = 'utf-8')
+                        print(fichategia)
+                    luzfi = str(sys.getsizeof(fichategia))
+                    izena = bytes(i,encoding = 'utf-8')
+                    luziz = str(sys.getsizeof(izena))
+                    print("ongi: ",izena," lusehera: ",luzfi)
+                    luz_a += int(luzfi) + int(luziz)
+                    izena_a.append(izena)
+                    fichategia_a.append(fichategia)
+                    e = threading.Event()
+                    e.wait(5)
+               arr_obj = (izena_a,fichategia_a)
+               data_string = pickle.dumps(arr_obj)
+               data_arr = pickle.loads(data_string)
+               print(data_arr[0])
+               self.soc.send(bytes(str(luz_a),encoding = 'utf-8'))
+               self.soc.recv(1024)
+               self.soc.sendall(data_string)
+               self.soc.recv(1024)
              else:
                erantzuna = "comandoa gaizki dago"
              self.soc.send(bytes(erantzuna,encoding = 'utf-8'))  # erantzuna bidaliko du 

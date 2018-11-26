@@ -1,6 +1,7 @@
 import socket 
 import time
 import zlib
+import pickle
 from fitxategiak.fitxa import bialketa
 
 
@@ -34,7 +35,12 @@ class cliente(object):
               print(str(erantzuna,encoding = 'utf-8')) 
             if comand[0].lower() == "local" and len(comand) > 1 :
               if comand[1].lower() == "all":
-                print("all")
+                luz_a =  self.so.recv(14095)
+                self.so.send(bytes("ok",encoding = 'utf-8'))#
+                fitxategiak_a =  self.so.recv(int(luz_a))
+                self.so.send(bytes("ok",encoding = 'utf-8'))#
+                data_arr = pickle.loads(fitxategiak_a)
+                print(data_arr[0])
                 ruta = "C:\\Users\\web\\Desktop\\nuevoxczx"
                 #bi = bialketa(izen_a,fitxa_a,ruta,"all") 
                 #bi.exekutatu()
