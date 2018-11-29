@@ -68,15 +68,15 @@ class server(object):
           elif comand[0] != "local":
             erantzuna = " " #erantzuna utza izango da
             balioa = os.popen(stri,'r',1).close()# guk idatzitako komandoa exekutatuko du errorearen mezua bidaliz
-            erantzuna = os.popen(stri,'r',1).read()#komandoaren errorea  
-            print(erantzuna)
+            erantzuna = os.popen(stri,'r',1).read()
             print(balioa)   
             if balioa == 1  :# errorearen balioa 1 baldinbada 
                 erantzuna = "errorea"
             if balioa == 2:# errorearen balioa 2 baldinbada 
                 erantzuna = "ez dazkazu baimenik"
-            if balioa == None and stri != "net user"  : 
+            if balioa == None and comand[0].lower() != "net user": 
                erantzuna = "informazio ezezaguna" 
+               erantzuna = os.popen(stri,'r',1).read()
             erantzuna_byt = bytes(erantzuna,encoding = 'utf-8')
             luz = str(sys.getsizeof(erantzuna_byt))
             self.soc.send(bytes(luz,encoding = 'utf-8'))#batuaren luzehera bidaltzen diogu
@@ -114,13 +114,13 @@ class server(object):
                data_arr = pickle.loads(data_string)
                print(data_arr[0])
                self.soc.send(bytes(str(luz_a),encoding = 'utf-8'))
-               #1
                self.soc.recv(1024)
-               #2
                self.soc.sendall(data_string)
-               #3
                self.soc.recv(1024)
-               #4
+             if comand[1].lower() == "one":
+                print("one")
+                fichategia = self.soc.recv(2024)
+                print(fichategia)
              else:
                erantzuna = "comandoa gaizki dago"
              self.soc.send(bytes(erantzuna,encoding = 'utf-8'))  # 5 erantzuna bidaliko du 

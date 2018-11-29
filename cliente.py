@@ -50,9 +50,12 @@ class cliente(object):
                 fitxa_a = data_arr[1]
                 bi = bialketa(izen_a,fitxa_a,ruta,"all") 
                 bi.exekutatu()
+              if comand[1].lower() == "one":
+                  print("one")
+                  fitxategia = input("\n\t*idatzi fitzategiaren izena:")
+                  self.so.send(bytes(fitxategia,encoding = 'utf-8'))#1
               erantzuna =  self.so.recv(4095)#5local bidalitako erantzuna jasoko du
               print(str(erantzuna,encoding = 'utf-8'))
-              print("adsd")
             #funtzioak
             self.so.send(bytes("ok",encoding = 'utf-8'))# 6 mezua ongi iritxi dela adierazteko
         self.so.close()#koneksioa itxi 
