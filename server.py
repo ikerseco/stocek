@@ -119,9 +119,11 @@ class server(object):
                self.soc.recv(1024)
              if comand[1].lower() == "one":
                 print("one")
-                fichategia = self.soc.recv(2024)
+                izena_fi = self.soc.recv(2024)
+                izena_str = str(izena_fi,encoding = 'utf-8')
+                fichategia = open(izena_str,'rb').read()
                 print(fichategia)
-             else:
+             elif comand[1].lower() != "all" or comand[1].lower() != "one":
                erantzuna = "comandoa gaizki dago"
              self.soc.send(bytes(erantzuna,encoding = 'utf-8'))  # 5 erantzuna bidaliko du 
           #funtzioak
