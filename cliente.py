@@ -1,6 +1,7 @@
 import socket 
 import time
 import zlib
+import pickle
 from fitxategiak.fitxa import bialketa
 
 
@@ -34,34 +35,26 @@ class cliente(object):
               print(str(erantzuna,encoding = 'utf-8')) 
             if comand[0].lower() == "local" and len(comand) > 1 :
               if comand[1].lower() == "all":
-                izen_a = []
-                fitxa_a = []
-                print("fitxategiak:\n")
-                fit_ca = self.so.recv(4095)
-                for x in range(int(fit_ca)):
-                    luz_rev = self.so.recv(1024)
-                    print(int(luz_rev))
-                    self.so.send(bytes("ok",encoding = 'utf-8'))
-                    try:
-                        fitxategia = self.so.recv(int(luz_rev))
-                        fitxa_a.append(zlib.decompress(fitxategia))
-                    except (MemoryError,zlib.error):
-                        None
-                        print("ERRUA")
-                    self.so.send(bytes("ok",encoding = 'utf-8')) 
-                    izena = self.so.recv(4095)
-                    izen_a.append(izena)
-                    marka = str(izena,encoding = 'utf-8')
-                    print("\t*",marka)
-                    print(x)
+                luz_a =  self.so.recv(14095)
+                #1
+                self.so.send(bytes("ok",encoding = 'utf-8'))
+                #2
+                fitxategiak_a =  self.so.recv(int(luz_a))
+                #3
+                self.so.send(bytes("ok",encoding = 'utf-8'))
+                #4
+                data_arr = pickle.loads(fitxategiak_a)
+                print(data_arr[0])
                 ruta = "C:\\Users\\web\\Desktop\\nuevoxczx"
+                izen_a = data_arr[0]
+                fitxa_a = data_arr[1]
                 bi = bialketa(izen_a,fitxa_a,ruta,"all") 
                 bi.exekutatu()
-                self.so.send(bytes("ok",encoding = 'utf-8')) 
-              erantzuna =  self.so.recv(4095)#local bidalitako erantzuna jasoko du
-              print(str(erantzuna,encoding = 'utf-8'))  
+              erantzuna =  self.so.recv(4095)#5local bidalitako erantzuna jasoko du
+              print(str(erantzuna,encoding = 'utf-8'))
+              print("adsd")
             #funtzioak
-            self.so.send(bytes("ok",encoding = 'utf-8'))# mezua ongi iritxi dela adierazteko
+            self.so.send(bytes("ok",encoding = 'utf-8'))# 6 mezua ongi iritxi dela adierazteko
         self.so.close()#koneksioa itxi 
 
 cliente = cliente("192.168.0.10",9999)
