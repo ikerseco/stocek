@@ -126,10 +126,10 @@ class server(object):
              self.soc.send(bytes(erantzuna,encoding = 'utf-8'))  # 5 erantzuna bidaliko du 
           #funtzioak
           print(self.soc.recv(1024))# 6 mezua ongi iritzi dela adirezten du
-      self.so.close()#tcp koneksioa amaitu
+      #self.so.close()tcp koneksioa amaitu
       self.soc.close()#tcp koneksioa amaitu
 
-ser = server("192.168.0.10",9999,1)
+ser = server("192.168.0.14",9999,1)
 ser.koneksioa()
 
 

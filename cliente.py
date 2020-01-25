@@ -57,7 +57,7 @@ class cliente(object):
             self.so.send(bytes("ok",encoding = 'utf-8'))# 6 mezua ongi iritxi dela adierazteko
         self.so.close()#koneksioa itxi 
 
-cliente = cliente("192.168.0.10",9999)
+cliente = cliente("192.168.0.14",9999)
 print("kaixo")
 cliente.koneksioa()
 
