@@ -19,7 +19,13 @@ class server(object):
         self.so.listen(koneksioak)
         self.soc , addr = self.so.accept()
     
-    
+    def comandLine(self):
+          user = win32api.GetUserName()
+          url = os.getcwd()#ruta aktuala 
+          self.soc.send(bytes( user + "@" + url,encoding = 'utf-8'))# bidali ruta aktuala
+          hartuta = self.soc.recv(1024) # guk bidalitako mezua hartuko du (1024) bytes
+          stri = str(hartuta,encoding='utf-8')   
+          print(stri)
 
     def koneksioa(self):
       while True:
@@ -130,7 +136,8 @@ class server(object):
       self.soc.close()#tcp koneksioa amaitu
 
 ser = server("192.168.0.14",9999,1)
-ser.koneksioa()
+while True:
+    ser.comandLine()
 
 
 

