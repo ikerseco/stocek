@@ -2,7 +2,7 @@ import os
 import gnupg
 from pprint import pprint
 
-class encript(object):
+class asime(object):
     def __init__(self,home):
         self.gpg = gnupg.GPG(gnupghome=home)
 
@@ -27,6 +27,27 @@ class encript(object):
         pprint(arrPri)
         print("public key:")
         pprint(arrPubl)
+
+    def encrypt(self,mezua):
+        data_encryted = self.gpg.encrypt(mezua,"garrantsitsua@gmail.com")
+        x = str(data_encryted)
+        return x
+
+    def decrypt(self,mezua):
+        data_decrypt = self.gpg.decrypt(mezua,passphrase='5dIf"ri?siaVrU#0jC')
+        return data_decrypt
+
+    def exportkey(self):
+        public_keys = self.gpg.export_keys("66277315134B9280")
+        private_keys = self.gpg.export_keys("66277315134B9280", True,expect_passphrase=False)
+        with open('mykeyfile.asc', 'w') as f:
+            f.write(public_keys)
+            f.write(private_keys)
+    
+    def importkeys(self):
+        key_data = open('mykeyfile.asc').read()
+        import_result = gpg.import_keys(key_data)
+        pprint(import_result.results)
 #gakoa sortu 
 """gpg = gnupg.GPG(gnupghome='keys')
 input_data = gpg.gen_key_input(
@@ -56,11 +77,16 @@ pprint(import_result.results)"""
 
 try:
     os.mkdir("key")
-    cript = encript("key")
+    cript = asime("key")
     cript.creatinKEY(None,None)
 except FileExistsError:
-    cript = encript("key")
+    cript = asime("key")
     cript.listkeys()
     print("existit")
+    phraseEN = cript.encrypt("apa")
+    print(phraseEN)
+    phraseDE = cript.decrypt(phraseEN)
+    cript.importkeys()
+
 
 
