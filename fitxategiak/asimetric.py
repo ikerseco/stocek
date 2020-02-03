@@ -1,4 +1,3 @@
-import os
 import gnupg
 from pprint import pprint
 
@@ -12,7 +11,7 @@ class asime(object):
             name_email='garrantsitsua@gmail.com',
             passphrase='5dIf"ri?siaVrU#0jC')
         key = self.gpg.gen_key(input_data)
-        print(key)
+        print('idkey: %s' % key )
 
     def listkeys(self):
         arrPri = []
@@ -49,32 +48,8 @@ class asime(object):
         import_result = gpg.import_keys(key_data)
         pprint(import_result.results)
 #gakoa sortu 
-"""gpg = gnupg.GPG(gnupghome='keys')
-input_data = gpg.gen_key_input(
-    name_email='garrantsitsua@gmail.com',
-    passphrase='5dIf"ri?siaVrU#0jC')
-key = gpg.gen_key(input_data)
-print(key)
-#gakoak zerrendatu
-gpg = gnupg.GPG(gnupghome='keys')
-public_keys = gpg.list_keys()
-private_keys = gpg.list_keys(True)
-print('public keys:')
-pprint(public_keys)
-print('private keys:')
-pprint(private_keys)
-#gakoa exportattu
-#ascii_armored_public_keys = gpg.export_keys("2B8CC6F15BFDE7C2")
-#ascii_armored_private_keys = gpg.export_keys("2B8CC6F15BFDE7C2", True,expect_passphrase=False)
-#with open('mykeyfile.asc', 'w') as f:
-#    f.write(ascii_armored_public_keys)
-#    f.write(ascii_armored_private_keys)
 
-#gakoa inportatu
-key_data = open('mykeyfile.asc').read()
-import_result = gpg.import_keys(key_data)
-pprint(import_result.results)"""
-
+"""
 try:
     os.mkdir("key")
     cript = asime("key")
@@ -87,6 +62,6 @@ except FileExistsError:
     print(phraseEN)
     phraseDE = cript.decrypt(phraseEN)
     cript.importkeys()
-
+"""
 
 
