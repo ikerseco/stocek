@@ -30,13 +30,19 @@ class cliente(object):
 
 
     
-    def postPUKey(self):
+    def postPuKey(self):
         url = os.getcwd()
         filBT = None
         with open('pUcliente.pem', "rb") as key_file:
            filBT = key_file.read()
         print(filBT)
-        #self.so.send(bytes(mezua,encoding = 'utf-8'))
+        self.so.send(filBT)
+    
+    def getPuKey(self):
+        keyP =  self.so.recv(1024)
+        clientKey = open(f'pUserver.pem','w')
+        for x in keyP.splitlines():
+            clientKey.write(f'{str(x,"utf-8")}\n')
 
     def comandLIne(self):
         recibido = self.so.recv(4095)# ruta aktuala jasokodu (4095) bytes
@@ -93,9 +99,10 @@ class cliente(object):
 
 
 cliente = cliente("192.168.0.14",9999)
-cliente.postPUKey()
-while True:
-    cliente.comandLIne()
+cliente.postPuKey()
+cliente.getPuKey()
+#while True:
+#    cliente.comandLIne()
 
 
 

