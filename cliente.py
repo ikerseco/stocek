@@ -25,8 +25,9 @@ class cliente(object):
                                   &&&&&& 
             RSA
             """)
-        except ConnectionRefusedError:
-            print("none server...\n")
+        except (ConnectionRefusedError):
+           print("none server")
+
 
     
     def postPUKey(self):
@@ -87,6 +88,9 @@ class cliente(object):
             #funtzioak
             self.so.send(bytes("ok",encoding = 'utf-8'))# 6 mezua ongi iritxi dela adierazteko
         self.so.close()#koneksioa itxi 
+
+
+
 
 cliente = cliente("192.168.0.14",9999)
 cliente.postPUKey()

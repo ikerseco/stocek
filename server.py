@@ -147,7 +147,6 @@ while True:
 
 
 
-
 #recv mezua lortzeko balio du udp protokoloan
 #send mezua bidaltzeko balio du udp protokoloan
 
