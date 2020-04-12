@@ -52,16 +52,17 @@ class asime(object):
        for x in pemPu.splitlines():
            filePubli.write(f'{str(x,"utf-8")}\n')
     
-    def loadPublic(self):
-        with open(f'..\\public\\pcPublic.pem', "rb") as key_file:
+    def loadPublic(self,nameFile):
+        print(nameFile)
+        with open(nameFile, "rb") as key_file:
             public_key = serialization.load_pem_public_key(
                 key_file.read(),
                 backend=default_backend()
             )
             self.public_key = public_key
 
-    def loadPrymari(self):
-        with open(f'..\\prybate\\prybate.pem', "rb") as key_file:
+    def loadPrymari(self,nameFile):
+        with open(nameFile, "rb") as key_file:
             private_key = serialization.load_pem_private_key(
                 key_file.read(),
                 password=b'mypassword',

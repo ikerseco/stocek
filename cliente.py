@@ -43,9 +43,17 @@ class cliente(object):
         clientKey = open(f'pUserver.pem','w')
         for x in keyP.splitlines():
             clientKey.write(f'{str(x,"utf-8")}\n')
+    
+    def keysLoad(self):
+        self.GPG.loadPublic("pUserver.pem")
+        os.chdir("..\\prybate")
+        self.GPG.loadPrymari("prybate.pem")
+        print(self.GPG.private_key)
 
     def comandLIne(self):
         recibido = self.so.recv(4095)# ruta aktuala jasokodu (4095) bytes
+        decrip = self.GPG.decrypt(recibido)
+        print(decrip)
         url = str(recibido,encoding='utf-8')#ruta aktuala string modura pasako du
         mezua  = input(url + ">")
         self.so.send(bytes(mezua,encoding = 'utf-8'))
@@ -101,8 +109,10 @@ class cliente(object):
 cliente = cliente("192.168.0.14",9999)
 cliente.postPuKey()
 cliente.getPuKey()
-#while True:
-#    cliente.comandLIne()
+cliente.keysLoad()
+
+while True:
+    cliente.comandLIne()
 
 
 
