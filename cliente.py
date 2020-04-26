@@ -51,15 +51,20 @@ class bezeroa(object):
     def comandLIne(self):
         recibido = self.so.recv(4095)# ruta aktuala jasokodu (4095) bytes
         recibidoDEc = self.GPG.decrypt(recibido)
-        print(recibidoDEc)
         url = str(recibidoDEc,encoding='utf-8')#ruta aktuala string modura pasako du
         mezua  = input(url + ">")
         mezuaENc = self.GPG.encrypted(bytes(mezua,encoding='utf-8'))
         self.so.send(mezuaENc)
         return mezua
     
+    def windows_Com(self):
+        cmd = self.so.recv(1024) 
+        cmdDEc = self.GPG.decrypt(cmd)
+        cmd = str(cmdDEc,encoding='utf-8')
+        print(cmd)
+
     def comand_Error(self):
-        erro = self.so.recv(1024)
+        erro = self.so.recv(2024)
         erroDEc = self.GPG.decrypt(erro)
         erro = str(erroDEc,encoding='utf-8')
         print(erro)
@@ -120,19 +125,24 @@ bezeroa.keysLoad()
 while True:
    comand = bezeroa.comandLIne()
    Com_ALL = ["dir","systeminfo"]
-   try:
-        inf = Com_ALL.index(comand)
-        windows_Com = ["dir","systeminfo"]
-        Balue = None
-        y = 0
-        for x in windows_Com :
-            print(x)
-            if x == windows_Com[y] and Balue == None:
-                Balue = "windowsComand" 
-                print(Balue)                                     
-        print(Balue)
-   except(ValueError):
-        print("ValueError")
-        bezeroa.comand_Error() 
+   #try:
+   inf = Com_ALL.index(comand)
+   windows_Com = ["dir","systeminfo"]
+   Balue = None
+   y = 0
+   for x in windows_Com :
+        print(x)
+        if x == comand and Balue == None:
+            Balue = 0
+        y += 1 
+   print(Balue)                                     
+   switcher = { 
+        0: bezeroa.windows_Com(), 
+        1: "one", 
+        2: "two", 
+   }
+   switcher.get(Balue)
+   #except(ValueError):
+   #     bezeroa.comand_Error() 
 
 
