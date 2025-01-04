@@ -1,5 +1,6 @@
 import os
 import tempfile
+from shutil import rmtree
 from pprint import pprint
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.asymmetric import rsa
@@ -16,12 +17,12 @@ from threading import Timer
 
 class asime(object):
     def __init__(self,home):
+        self.home = home
         self.public_key = None
         self.private_key = None
         self.fitxategia =  tempfile.mkdtemp(suffix=None, prefix=None, dir=home)
          
     def Generastekey(self,name): 
-       print(self.fitxategia)
        os.chdir(self.fitxategia)  
        #pribate key 
        os.mkdir("prybate", mode=0o777, dir_fd=None)
@@ -53,7 +54,6 @@ class asime(object):
            filePubli.write(f'{str(x,"utf-8")}\n')
     
     def loadPublic(self,nameFile):
-        print(nameFile)
         with open(nameFile, "rb") as key_file:
             public_key = serialization.load_pem_public_key(
                 key_file.read(),
@@ -71,7 +71,6 @@ class asime(object):
             self.private_key = private_key    
 
     def encrypted(self,data):
-        print(self.public_key)
         ciphertext = self.public_key.encrypt(
             data,
             padding.OAEP(
@@ -117,7 +116,8 @@ class asime(object):
         )
         return verify  
         
-    
+    def delete(self):
+        rmtree(self.fitxategia)
 
 
 
