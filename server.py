@@ -255,5 +255,5 @@ while True:
          print("cd")
         if arrComad[0] == "exit":
            break
-        else:
+        elif arrComad[0] != "exit" and arrComad[0] != "cd":
          ser.cmdGlobal()

