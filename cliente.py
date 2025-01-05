@@ -194,7 +194,7 @@ class bezeroa(object):
 
 
 
-bezeroa = bezeroa("192.168.1.137",9999)
+bezeroa = bezeroa("192.168.1.140",9999)
 bezeroa.postPuKey()
 bezeroa.getPuKey()
 bezeroa.keysLoad()
