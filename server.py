@@ -106,7 +106,7 @@ class server(object):
     
     def keysLoad(self):
         self.GPG.loadPublic("pUcliente.pem")
-        os.chdir("..\\prybate")
+        os.chdir("../prybate")
         self.GPG.loadPrymari("prybate.pem")
         os.chdir("../../")
         self.GPG.delete()
@@ -236,7 +236,7 @@ class server(object):
       #self.so.close()tcp koneksioa amaitu
       self.soc.close()#tcp koneksioa amaitu
 
-ser = server("192.168.1.137",9999,1)
+ser = server("192.168.1.130",9999,1)
 ser.getPuKey()
 ser.postPuKey()
 ser.keysLoad()
