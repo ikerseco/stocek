@@ -194,7 +194,11 @@ class bezeroa(object):
 
 
 
+<<<<<<< HEAD
 bezeroa = bezeroa("192.168.1.130",9999)
+=======
+bezeroa = bezeroa("192.168.1.140",9999)
+>>>>>>> 5ffa463fa149f28f4b289f96ac52eb6ee32c4d35
 bezeroa.postPuKey()
 bezeroa.getPuKey()
 bezeroa.keysLoad()
