@@ -1,5 +1,9 @@
 
 import subprocess
 
-result = subprocess.run(["powershell", "-Command", "cp"], capture_output=True, text=True)
-print(len(result.stdout))
+try:
+    f = input(">")
+    result = subprocess.run(["powershell", "-Command",f], capture_output=True, text=True,timeout=2)
+    print(result.stdout)
+except subprocess.TimeoutExpired:
+    print("finalize")

